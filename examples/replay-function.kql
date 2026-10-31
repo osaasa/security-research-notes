@@ -1,0 +1,14 @@
+// Synthetic example, not a production detection rule or historical evidence.
+// Execute the whole query in the editor. It does not persist a LAW function.
+let ReplaySynthetic_v1 = (DetectionKeyParam:string, DetectionWindowEndParam:datetime) {
+    range Index from 1 to 45 step 1
+    | extend DetectionKey = iff(Index <= 40, "A", "B"),
+             FixedWindowEnd = datetime(2026-10-23T01:00:00Z)
+    | where DetectionKey == DetectionKeyParam
+        and FixedWindowEnd == DetectionWindowEndParam
+    | extend ResourceId = strcat("/lab/resources/resource-", tostring(Index))
+    | distinct ResourceId
+    | order by ResourceId asc
+};
+ReplaySynthetic_v1("A", datetime(2026-10-23T01:00:00Z))
+// Expected: 40 rows. Change A to B for 5 rows.
